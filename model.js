@@ -9,6 +9,8 @@ const progress = document.querySelector(".progress");
 const currentTime = document.querySelector("#current-time");
 const duration = document.querySelector("#duration");
 const cards = document.querySelectorAll(".card-flyer");
+const modal = document.querySelector("#exampleModal");
+
 const songs_by_playlist = {
   pop: [
     {
@@ -20,11 +22,6 @@ const songs_by_playlist = {
       song_name: "Aunque Te Fuiste - Don Omar",
       song_link:
         "https://www.playurbanomp3.com/Canciones/Don%20Omar/05.%20Don%20Omar%20-%20Aunque%20Te%20Fuiste%20(WwW.PlayUrbano.Com).mp3",
-    },
-    {
-      song_name: "Aunque Te Fuiste - Don Omar",
-      song_link:
-        "https://www.playurbanomp3.com/Canciones/Don%20Omar/Don%20Omar,%20Rakim%20&%20Ken-Y%20-%20Si%20La%20Ves%20(WwW.PlayUrbano.Com).mp3",
     },
     {
       song_name: "Si La Vez - Don Omar Ft. RKM Y Ken-Y",
@@ -51,6 +48,11 @@ const songs_by_playlist = {
       song_link:
         "https://www.playurbanomp3.com/Canciones/Don%20Omar/Don%20Omar%20Ft.%20Aventura%20-%20Ella%20y%20Yo%20(WwW.PlayUrbano.Com).mp3",
     },
+    {
+      song_name: "Me Acuerdo - Vico C Ft. Lizy Estrella (Live)",
+      song_link:
+        "https://www.playurbanomp3.com/Canciones/Old%20School%20MP3/RKM%20Y%20Ken-Y%20-%20Down%20(Remix)%20(WwW.PlayUrbano.Com).mp3",
+    },
   ],
 };
 
@@ -61,23 +63,28 @@ cards.forEach((card) => {
   card.addEventListener("click", (e) => {
     playlist.innerHTML = "";
     console.log(card);
-    // Get the data from the clicked card
-    // console.log(e.target);
-
     const get_genre_name = card.querySelector("h6").innerHTML;
-    console.log(get_genre_name.toLowerCase());
+    // console.log(get_genre_name.toLowerCase());
     const get_song_info_genre = songs_by_playlist[get_genre_name.toLowerCase()];
     console.log(get_song_info_genre);
+    var flag = true;
     get_song_info_genre.forEach((song) => {
       // Create a new li element with data-src attribute and text content
       const li = document.createElement("li");
       li.setAttribute("data-src", song["song_link"]);
       li.textContent = song["song_name"];
-
+      if (flag) {
+        li.classList.add("active-song");
+        flag = false;
+      }
       // Append the new li element to the ul element
       playlist.appendChild(li);
     });
   });
+});
+
+modal.addEventListener("hidden.bs.modal", function () {
+  audio.pause();
 });
 
 playlist.addEventListener("click", (e) => {
@@ -85,8 +92,6 @@ playlist.addEventListener("click", (e) => {
     currentSong = Array.from(playlist.children).indexOf(e.target);
     audio.src = e.target.getAttribute("data-src");
     playPause.innerHTML = '<i class="bi bi-pause-fill"></i>';
-    console.log(e.target);
-    e.target.classList.add("active-song");
     audio.play();
     setActiveSong(currentSong);
   }
@@ -159,6 +164,7 @@ audio.addEventListener("ended", (e) => {
 
 const setActiveSong = (index) => {
   // remove "active" class from previously active song
+  // console.log("active song", playlist.querySelector(".active-song"));
   playlist.querySelector(".active-song").classList.remove("active-song");
 
   // add "active" class to currently playing song
